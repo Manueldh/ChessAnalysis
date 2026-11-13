@@ -132,3 +132,11 @@ See `public/licenses.html` for upstream source and license links. Preserve third
 The Summary tab compares both players, shows an interactive evaluation graph, and counts Best, Excellent, Good, Inaccuracy, Mistake and Blunder moves. Click a count to cycle through those moves; click the graph or use its slider to replay a position. Counts appear as analysis finishes. Accuracy is shown only after all moves for that side are assessed.
 
 Accuracy is an app-specific estimate: each move receives `100 * exp(-centipawn_loss / 100)`; engine-best moves receive 100 to avoid independent-search noise. A player's accuracy is the mean of those scores. It is not Chess.com's proprietary score and depends on search depth. Brilliant sacrifices and performance Elo are not assessed; the interface explicitly shows Brilliant as “Not assessed”.
+
+### Automatic Chess.com game feed
+
+Open **My games**, enter your Chess.com username and choose **Connect games**. The username is remembered in that browser, and future visits open your game feed. No Chess.com password or API key is needed. The feed checks public archives when opened, when returning to the tab, and every minute while visible. **Refresh games** checks manually; **Load older games** pages through your full standard-chess archive, 40 games at a time.
+
+Use the same username on each device. Public completed games are fetched on each device; this is not account/cloud-storage sync. Reviews run locally when you open a game. Engine results and manual PGN imports are not shared across devices. Chess.com's caching may delay new games; this is not a real-time game feed. Only completed standard chess games are listed (not active games or variants).
+
+The server uses the documented public archive endpoints through `/api/games`, validates usernames/cursors, requests archives sequentially, and reports rate limits without removing the current list. No third-party credentials are stored. API reference: https://www.chess.com/news/view/published-data-api
