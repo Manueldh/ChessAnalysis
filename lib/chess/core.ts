@@ -49,3 +49,18 @@ export function hanging(fen:string) {
   const c=new Chess(fen), me=c.turn(), enemy=me==='w'?'b':'w';
   return c.board().flat().filter(p=>p && p.color===me && p.type!=='k' && c.isAttacked(p.square,enemy) && !c.isAttacked(p.square,me)).map(p=>`${names[p!.type]} on ${p!.square}`);
 }
+
+/** App-specific accuracy: mean exp(-loss/100), where loss is centipawns.
+ * Best moves receive 100 to avoid penalising independent search noise.
+ * Incomplete sides have no final accuracy; counts include assessed moves only.
+ */
+export const reviewCategories = ['Best','Excellent','Good','Inaccuracy','Mistake','Blunder'] as const;
+export function gameSummary(game:Game, evaluations:Record<number,Evaluation>) {
+  return (['w','b'] as const).map(color=>{
+    const moves=game.moves.map((move,i)=>({move,index:i+1,...classify(evaluations[i],evaluations[i+1],move)})).filter(m=>m.move.color===color);
+    const assessed=moves.filter(m=>m.label!=='Pending');
+    const accuracy=assessed.length===moves.length&&moves.length>0
+      ? assessed.reduce((sum,m)=>sum+(m.label==='Best'?100:100*Math.exp(-m.loss/100)),0)/moves.length : null;
+    return {color,accuracy,assessed:assessed.length,total:moves.length,categories:reviewCategories.map(label=>({label,indices:assessed.filter(m=>m.label===label).map(m=>m.index)}))};
+  });
+}

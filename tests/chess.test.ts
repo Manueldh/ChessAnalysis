@@ -1,6 +1,6 @@
 import { strict as assert } from 'node:assert';
 import { Chess } from 'chess.js';
-import { parseGame, DEMO, classify, notation, explain, hanging, type Evaluation } from '../lib/chess/core';
+import { parseGame, DEMO, gameSummary, classify, notation, explain, hanging, type Evaluation } from '../lib/chess/core';
 const demo=parseGame(DEMO);
 assert.equal(demo.moves.length,14);
 assert.ok(new Chess(demo.fens.at(-1)).isCheckmate());
@@ -19,3 +19,20 @@ const castle=new Chess('r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1');castle.move('O-O'
 const ep=new Chess();['e4','a6','e5','d5','exd6'].forEach(m=>ep.move(m));assert.equal(ep.get('d5'),undefined);
 assert.ok(hanging('7k/8/8/8/3q4/8/3R4/7K w - - 0 1').includes('rook on d2'));
 console.log('PASS: PGN replay, invalid PGN, isolated variations, colour-aware move classification, SAN lines, promotion, castling, en passant, undefended-piece detection.');
+
+// Summary scores must wait for complete assessment of each side.
+const short=parseGame('1. e4 e5 2. Nf3 Nc6 *');
+const clean=Object.fromEntries(short.fens.map((_,i)=>[i,score(0,short.moves[i]?short.moves[i].from+short.moves[i].to:'')]));
+assert.equal(gameSummary(short,{} )[0].accuracy,null);
+const perfect=gameSummary(short,clean);
+assert.deepEqual(perfect.map(s=>s.accuracy),[100,100]);
+assert.deepEqual(perfect.map(s=>s.categories[0].indices),[[1,3],[2,4]]);
+const partial=gameSummary(short,{0:clean[0],1:clean[1]});
+assert.equal(partial[0].assessed,1);assert.equal(partial[0].accuracy,null);
+const poor={...clean,0:score(0,'d2d4'),1:score(-400,'e7e5')};
+assert.ok(gameSummary(short,poor)[0].accuracy!<60);
+assert.equal(gameSummary(short,poor)[1].accuracy,100);
+assert.equal(gameSummary(short,poor)[0].categories.find(c=>c.label==='Blunder')!.indices[0],1);
+const mateSwing={...clean,0:score(99900,'d2d4'),1:score(-99900,'e7e5')};
+assert.ok(Number.isFinite(gameSummary(short,mateSwing)[0].accuracy));
+console.log('PASS: summary side separation, pending accuracy, category navigation, perfect games, blunders and mate swings.');

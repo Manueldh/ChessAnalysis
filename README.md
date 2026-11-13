@@ -126,3 +126,9 @@ This is an independent project, not affiliated with Chess.com.
 - React: MIT. Lucide: ISC.
 
 See `public/licenses.html` for upstream source and license links. Preserve third-party notices when redistributing.
+
+### Game summary
+
+The Summary tab compares both players, shows an interactive evaluation graph, and counts Best, Excellent, Good, Inaccuracy, Mistake and Blunder moves. Click a count to cycle through those moves; click the graph or use its slider to replay a position. Counts appear as analysis finishes. Accuracy is shown only after all moves for that side are assessed.
+
+Accuracy is an app-specific estimate: each move receives `100 * exp(-centipawn_loss / 100)`; engine-best moves receive 100 to avoid independent-search noise. A player's accuracy is the mean of those scores. It is not Chess.com's proprietary score and depends on search depth. Brilliant sacrifices and performance Elo are not assessed; the interface explicitly shows Brilliant as “Not assessed”.
