@@ -140,3 +140,9 @@ Open **My games**, enter your Chess.com username and choose **Connect games**. T
 Use the same username on each device. Public completed games are fetched on each device; this is not account/cloud-storage sync. Reviews run locally when you open a game. Engine results and manual PGN imports are not shared across devices. Chess.com's caching may delay new games; this is not a real-time game feed. Only completed standard chess games are listed (not active games or variants).
 
 The server uses the documented public archive endpoints through `/api/games`, validates usernames/cursors, requests archives sequentially, and reports rate limits without removing the current list. No third-party credentials are stored. API reference: https://www.chess.com/news/view/published-data-api
+
+### Shareable links
+
+Pages use hash routes (`#/games`, `#/review`, `#/practice`) with game data and position parameters. Copy the address bar or choose **Copy game link** to share the selected position, including the visible variation and board orientation. Refresh restores it; browser Back/Forward navigates between pages and games. Stepping through moves updates the current history entry to avoid hundreds of Back clicks.
+
+Game PGN is included in the fragment, so imported games work on another device without a database. These links can be long, and anyone receiving one can read the included PGN. Analysis is recalculated locally. Links do not contain engine results, practice progress, or account credentials.

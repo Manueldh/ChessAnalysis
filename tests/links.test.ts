@@ -1,0 +1,10 @@
+import {strict as assert} from 'node:assert';
+import {encodeLink,decodeLink} from '../lib/chess/links';
+import {parseGame,DEMO} from '../lib/chess/core';
+const state={section:'analysis' as const,game:parseGame(DEMO),index:2,branch:['f1c4','g8f6'],flip:true};
+const decoded=decodeLink(encodeLink(state));assert.deepEqual(decoded,state);
+for(const section of ['library','practice','analysis'] as const)assert.equal(decodeLink(encodeLink({...state,section})).section,section);
+assert.throws(()=>decodeLink('#/unknown'));assert.throws(()=>decodeLink(encodeLink(state).replace('move=2','move=999')));
+assert.throws(()=>decodeLink(encodeLink({...state,branch:['a1a8']})));
+assert.equal(decodeLink(encodeLink({...state,game:parseGame(DEMO.replace('You','Manuël & friend'))})).game.headers.White,'Manuël & friend');
+console.log('PASS: portable game links, page links, variations, orientation, unicode and invalid links');
