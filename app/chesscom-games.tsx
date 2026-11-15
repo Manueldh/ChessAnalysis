@@ -1,4 +1,5 @@
 'use client';
+import {ExportGames} from './export-games';
 import { useEffect,useRef,useState } from 'react';
 type RemoteGame={id:string;pgn:string;white:string;black:string;whiteResult:string;blackResult:string;time:string;date:number};
 type Cursor={month:string;offset:number}|null;
@@ -30,6 +31,7 @@ export function ChesscomGames({username,onUsername,onReview}:{username:string;on
  function connect(e:React.FormEvent){e.preventDefault();const name=draft.trim().toLowerCase();if(!/^[a-z0-9_-]{2,50}$/.test(name)){setError('Enter a valid Chess.com username.');return;}if(name===username)void fetchGames();else onUsername(name);}
  return <section className="connected-games"><div className="feed-header"><div><h1>My games</h1><p>Play on Chess.com. Open a game here to review it.</p></div>{username&&<button className="ghost" disabled={loading} onClick={()=>fetchGames()}>{loading?'Refreshing…':'Refresh games'}</button>}</div>
  <form className="connect-form" onSubmit={connect}><label htmlFor="chesscom-username">Chess.com username</label><div><input id="chesscom-username" value={draft} onChange={e=>setDraft(e.target.value)} placeholder="Your username" autoComplete="off" spellCheck={false}/><button className="primary" disabled={loading}>{username?'Save username':'Connect games'}</button></div><small>No password needed. Enter the same username on each device.</small></form>
+ {username&&<ExportGames key={username} username={username}/>}
  {error&&<p className="error-box" role="alert">{error}</p>}
  {username&&<div className="feed-status" aria-live="polite"><span>{loading?'Checking Chess.com…':checked?`Last checked ${checked.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}`:'Ready to connect'}</span><span>Refreshes automatically while this page is open</span></div>}
  {!!games.length&&<div className="remote-games">{games.map(g=>{const white=g.white.toLowerCase()===username.toLowerCase();const result=white?g.whiteResult:g.blackResult;const other=white?g.blackResult:g.whiteResult;const outcome=result==='win'?'Won':other==='win'?'Lost':'Draw';return <button className="remote-game" key={g.id} onClick={()=>onReview(g.pgn)}><span className={'game-result '+outcome.toLowerCase()}>{outcome}</span><span className="remote-opponent"><strong>vs {white?g.black:g.white}</strong><small>{g.time} · You played {white?'White':'Black'} · <time dateTime={new Date(g.date*1000).toISOString()} title="Game finished · your local time">{new Date(g.date*1000).toLocaleDateString()} · {new Date(g.date*1000).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',hour12:false})}</time></small></span><span className="review-link">Review →</span></button>;})}</div>}

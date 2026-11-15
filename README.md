@@ -146,3 +146,9 @@ The server uses the documented public archive endpoints through `/api/games`, va
 Pages use hash routes (`#/games`, `#/review`, `#/practice`) with game data and position parameters. Copy the address bar or choose **Copy game link** to share the selected position, including the visible variation and board orientation. Refresh restores it; browser Back/Forward navigates between pages and games. Stepping through moves updates the current history entry to avoid hundreds of Back clicks.
 
 Game PGN is included in the fragment, so imported games work on another device without a database. These links can be long, and anyone receiving one can read the included PGN. Analysis is recalculated locally. Links do not contain engine results, practice progress, or account credentials.
+
+### Filtered batch exports
+
+In My games, choose Export games for AI. Set a count (1–100), time control, your colour, result, opponent text, and optional inclusive local date range. Latest 5/10/20/50 presets set the count; Find games searches archive pages newest first until enough matches are found or history ends. Searches are capped at 300 pages. Check/uncheck individual results before exporting.
+
+Download PGNs immediately, or analyse the selection with a sequential local Stockfish worker and download a JSON coaching report. The report includes player identity/colour, PGNs, per-move FEN positions, evaluations, depths, classifications, and best continuations. All evaluation scores are from White's perspective. Keep the page open; cancellation or navigating away stops the worker and does not export partial analysis. No AI API is called. Upload the JSON to your chosen AI yourself. Analysis is time-limited and the report explicitly documents its limitations.
